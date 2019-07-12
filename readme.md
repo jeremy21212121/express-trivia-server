@@ -12,7 +12,7 @@ I used the OpenTriviaDB directly from the front-end of an earlier web-based triv
 
 
 ## How it works
-This simple session-based back-end has two endpoints. They only accept POST requests and expect JSON encoded params.
+This simple session-based back-end has two endpoints. They only accept POST requests and expect JSON encoded payload.
 
 `/start {category: (number string between 9 and 32 or "any")}`
 Causes the back-end to fetch questions from the open trivia DB, attach them to the session, and returns the first question to the client. The category numbers refer to the categories provided by the OpenTriviaDB API.

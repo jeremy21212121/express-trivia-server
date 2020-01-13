@@ -6,10 +6,14 @@ const rp = require('request-promise')
 
 const validateCategory = (str) => {
   // valid categories are number strings between 9 and 32 or 'any'
-  const isAny = str === 'any'
-  const number = parseInt(str)
-  const validCategory = number > 8 && number < 33
-  return isAny || validCategory
+  let cond = false
+  if (str === 'any') {
+    cond = true
+  } else {
+    const number = parseInt(str)
+    cond = number !== NaN && number > 8 && number < 33
+  }
+  return cond
 }
 
 // returns a random int between 0 and max
@@ -65,3 +69,4 @@ module.exports = async (req, res) => {
     res.status(500).json({error: true, msg: 'invalid category'})
   }
 }
+

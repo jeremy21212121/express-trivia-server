@@ -52,3 +52,4 @@ module.exports = (req, res) => {
     res.status(500).json({error: true, msg: 'invalidindex'})
   }
 }
+

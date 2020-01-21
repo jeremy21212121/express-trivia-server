@@ -1,5 +1,6 @@
 const express = require('express')
 const session = require('express-session')
+const cors = require('cors')
 
 /** route handlers */
 const verifyThenNextQuestion = require('./handlers/verifyThenNextQuestion')
@@ -17,6 +18,7 @@ if (app.get('env') === 'production') {
 
 app.use(session(sessionOptions))
 app.use(express.json())
+app.use(cors())
 
 // routes
 app.post('/start', getQuestions)

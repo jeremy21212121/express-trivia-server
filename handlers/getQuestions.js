@@ -1,72 +1,74 @@
 /*
-  Gets questions/answers from openTriviaDB, adds them to the session, and returns the first question
+  Gets the right quantity of question/answers from each category, adds questions/answers to the session and responds with the first question.
+
+  The open trivia DB only supports single category requests, so multi-category is achieved with multiple http requests
 */
 
-const rp = require('request-promise')
+const validateCategories = require('../utils/categoryValidation')
 
-const validateCategory = (str) => {
-  // valid categories are number strings between 9 and 32 or 'any'
-  let cond = false
-  if (str === 'any') {
-    cond = true
-  } else {
-    const number = parseInt(str)
-    cond = number !== NaN && number > 8 && number < 33
-  }
-  return cond
-}
+// returns a random int between 0 and arg
+const getRandInt = require('../utils/getRandomInt')
 
-// returns a random int between 0 and max
-const getRandInt = (max) => Math.floor(Math.random() * (max + 1))
+// converts an answer object into a question object we can send to the client
+const answerToQuestion = require('../utils/answerObjectToQuestionObject')
 
-const answerToQuestion = (answerObject) => {
-  // converts an answer object into a question object we can send to the client
-  const q = Object.assign({}, answerObject)// break reference to answerObject
-	q.possible_answers = [...q.incorrect_answers]
-	q.possible_answers.splice(q.correctIndex, 0, q.correct_answer)// add the correct answer into the possible_answers array in a random position
-  // remove the properties that reveal the answer
-  delete q.incorrect_answers
-  delete q.correct_answer
-  delete q.correctIndex
-	return q
-}
+// gets Q/A's from openTriviaDB
+const getAnswers = require('../utils/getAnswers')
 
-module.exports = async (req, res) => {
-  // gets questions, adds them to session and returns the first question in the response
-  const category = req.body.category
+// route handler
+const getQuestions = async (req, res) => {
+
+  const categories = req.body.categories
   const session = req.session
-  if (validateCategory(category)) {
-    let url = 'https://opentdb.com/api.php?amount=10'
-    if (category !== 'any') {
-      // if the category is any, we can leave off the category param
-      url += '&category=' + category
-    }
-    try {
-      const response = await rp(url, {json: true})
-      if (response.response_code === 0) {
-        let answers = response.results.map(answerObject => {
-          // generate an index for placing the correct answer and store it in the answer object for later verification
-          answerObject.correctIndex = getRandInt(answerObject.incorrect_answers.length)
-          return answerObject
-        })
-        // generate the questions for the client
-        const questions = answers.map(a => answerToQuestion(a))
-        // initialize the session store
-        session.answers = answers
-        session.questions = questions
-        session.currentQuestion = 0
-        session.score = 0
-        session.gameOver = false;
-        res.json({success: true, questionData: {number: 0, question: questions[0]}})
-      } else {
-        // opentrivia api response_code was not 0
-        throw new Error('api error')
+
+  // holds the question / answer pairs for this section. We'll use this array for 1) generating the questions to send the client and 2) verifying the subsequent guesses on '/verify'
+  const answersArray = []
+  const questionsArray = []
+
+  try {
+
+    if (validateCategories(categories)) {
+      // these help us determine the quantity of Q/As we need from each category
+      // TODO: remove magic number 10
+      const questionsPerCategory = Math.floor( 10 / categories.length)
+      const remainder = 10 % categories.length
+
+      // iterate over each category and get relevant question/answers from open trivia DB
+      for (const [index, category] of categories.entries()) {
+        // if last category in array and there is a remainder, add the remainder for the quantity
+        let quantity = questionsPerCategory
+        if (remainder && (index === categories.length - 1)) {
+          quantity += remainder
+        }
+        // request an appropriate quantity of questions for this category
+        const categoryAnswerArray = await getAnswers(category, quantity)
+
+        // add this categories answers to the answersArray
+        answersArray.push(...categoryAnswerArray)
       }
-    } catch (error) {
-      res.status(500).json({error: true, msg: 'api error'})
-    }    
-  } else {
-    res.status(500).json({error: true, msg: 'invalid category'})
+
+    } else {
+      throw new Error('invalid-categories') // will be caught in catch block and result in a 500 respone + error message
+    }
+    // randomly shuffle answersArray.
+    // TODO: evaluate if this should be done earlier
+    answersArray.sort(() => getRandInt(2) - 1)
+    // map answers to questions that can be sent to client
+    questionsArray.push(...answersArray.map(answer => answerToQuestion(answer)))
+
+    // initialize session
+    session.answers = answersArray
+    session.questions = questionsArray
+    session.currentQuestion = 0
+    session.score = 0
+    session.gameOver = false;
+
+    // success! send first question
+    res.json({ success: true, questionData: {number: 0, question: questionsArray[0]} })
+
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message })
   }
 }
 
+module.exports = getQuestions

@@ -4,24 +4,24 @@ Powered by Express and the Open Trivia DB
 
 ## Status
 
-This project is currently a very early MVP
+This project is currently MVP. It works and is stable.
 
 ## Why
 
-I used the OpenTriviaDB directly from the front-end of an earlier web-based trivia game I made. This makes it very easy to cheat, just by opening the inspector in the browser. This aims to prevent this method of cheating, as well as simplifying the front-end by performing nearly all the logic in the back-end.
+I used the OpenTriviaDB directly from the front-end of an earlier web-based trivia game I made. This makes it very easy to cheat, just by opening the inspector in the browser. This aims to prevent this method of cheating, as well as simplifying the front-end by executing nearly all the logic in the back-end.
 
 
 ## How it works
-This simple session-based back-end has two endpoints. They only accept POST requests and expect JSON encoded payload.
+This simple session-based back-end has two endpoints. They only accept POST requests and expect a JSON-encoded payload.
 
-`/start {category: (number string between 9 and 32 or "any")}`
-Causes the back-end to fetch questions from the open trivia DB, attach them to the session, and returns the first question to the client. The category numbers refer to the categories provided by the OpenTriviaDB API.
+`/start {categories: [](number string between 9 and 32 or "any")}`
+Causes the back-end to fetch questions from the open trivia DB, attach them to the session, and returns the first question to the client. The category numbers refer to the categories provided by the OpenTriviaDB API. Since the API doesn't support multiple categories, multiple API calls may be required.
 
 `/verify {guess: number string between 0 and 3}`
 Verifies a correct answer and returns the next question or game over
 
 
-## Design
+## Architecture
 
 Session-based, using `memcached` as the session store. Our sessions are quite short, since a game only consists of 10 questions. Unfinished sessions will remain active for up to 24 hours, allowing games to be resumed if the client has preserved its state (ie. browser tab is still open).
 

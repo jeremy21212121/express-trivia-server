@@ -18,7 +18,7 @@ if (app.get('env') === 'production') {
 
 app.use(session(sessionOptions))
 app.use(express.json())
-app.use(cors())
+app.use(cors({ credentials: true, origin: '*' }))
 
 // routes
 app.post('/start', getQuestions)

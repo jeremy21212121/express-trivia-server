@@ -15,6 +15,9 @@ const answerToQuestion = require("../utils/answerObjectToQuestionObject");
 // gets Q/A's from openTriviaDB
 const getAnswers = require("../utils/getAnswers");
 
+// decodes html entities in questions and answers to save the client having to decode them
+const decodeCategoryAnswerArray = require('../utils/decodeCategoryAnswerArray')
+
 // route handler
 const getQuestions = async (req, res) => {
 
@@ -44,9 +47,9 @@ const getQuestions = async (req, res) => {
         }
         // request an appropriate quantity of questions for this category
         const categoryAnswerArray = await getAnswers(category, quantity);
-
+        const decodedCategoryAnswerArray = decodeCategoryAnswerArray(categoryAnswerArray);
         // add this categories answers to the answersArray
-        answersArray.push(...categoryAnswerArray);
+        answersArray.push(...decodedCategoryAnswerArray);
       }
     } else {
       throw new Error("invalid-categories"); // will be caught in catch block and result in a 500 respone + error message

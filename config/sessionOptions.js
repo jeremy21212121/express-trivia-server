@@ -11,7 +11,10 @@ const sessionOptions = {
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    maxAge: 24*60*60*1000
+    maxAge: 24*60*60*1000,
+    credentials: true,
+    sameSite: 'strict',
+    // secure: true
   },
   store: new MemcachedStore({
     hosts: ['127.0.0.1:11211'],

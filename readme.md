@@ -23,7 +23,7 @@ Causes the back-end to fetch questions from the open trivia DB, attach them to t
 Verifies a guess and returns the next question or game over
 
 
-## Architecture
+## Overview
 
 Session-based, using `memcached` as the session store. Our sessions are quite short, since a game only consists of 10 questions. Unfinished sessions will remain active for up to 24 hours, allowing games to be resumed if the client has preserved its state (ie. browser tab is still open).
 
@@ -37,7 +37,9 @@ Upon receiving a valid POST request to `/start`, we request the questions/answer
 
 Upon receiving a valid POST to `/verify`, we verify the client's guess. The response includes the correctness of their guess, as well as the next question. This prevents clients from trying to make multiple guesses at the same question. This response does **not** include the correct answer, only whether their guess was correct or not. I have found that returning the correct answer upon an incorrect guess decreases replayability.
 
-Intended to run on linux distros with `systemd`, like Debian or Ubuntu. It will ultimately include a systemd service file for daemonizing this service, much like the one that is included with my [nodemailer-contact-form](https://github.com/jeremy21212121/nodemailer-contact-form) repo. It also expects `memcached` to be running locally on the default port. HTTPS termination and proxying is handled by nginx, which will also serve the web app front-end, when it is completed.
+Intended to run on linux distros with `systemd`, like Debian or Ubuntu. See `systemd` folder for the service file. This allows systemd to handle starting, stopping, restarting and logging for our server process.
+
+It also expects `memcached` to be running locally on the default port. HTTPS termination and proxying is handled by nginx, which will also serve the web app front-end, when it is completed.
 
 ## todo
 - cache responses from [OpenTDB](https://opentdb.com/) to improve `/start` endpoint performance on multi-category games

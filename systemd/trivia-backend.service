@@ -1,0 +1,26 @@
+[Unit]
+Description=Backend node.js server for Just Trivia game
+Requires=network-online.target nginx.service memcached.service
+# the following are hard dependencies, the server won't run without them
+After=syslog.target network-online.target memcached.service
+
+[Service]
+# nvm isn't installed on this server for some reason. really should be, as we are running the odd repo version of node.
+ExecStart=/usr/bin/npm start
+WorkingDirectory=/opt/trivia-backend
+Restart=always
+# Restart service after 10 seconds if node service crashes
+RestartSec=10
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=trivia-backend
+# should be run as own user but im laaaaazy. user runs one other node service on this machine so it's not the end of the world.
+# it's DO not AWS so ubuntu isn't the default user, it's just a user I made. 
+User=ubuntu
+Group=ubuntu
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+

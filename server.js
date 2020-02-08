@@ -2,6 +2,9 @@ const express = require('express')
 const session = require('express-session')
 const cors = require('cors')
 
+const { db } = require('./utils/db.js')
+db.numberOfRecords().then(n => console.log(`DB contains ${n} questions`))
+
 /** route handlers */
 const verifyThenNextQuestion = require('./handlers/verifyThenNextQuestion')
 const getQuestions = require('./handlers/getQuestions')

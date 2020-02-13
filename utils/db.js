@@ -43,7 +43,6 @@ db.findAnswers = (query = { category: 'any' }, limit = 10) =>
       query.category = dbCategoryDict.apiName
     }
 
-    // console.log('query.category', query.category)
     const time1 = Date.now()
     const count = await db.numberOfRecords(query).catch(e => reject(e))
     const timeForCount = Date.now() - time1
@@ -55,7 +54,7 @@ db.findAnswers = (query = { category: 'any' }, limit = 10) =>
     }
     db.find(query).skip(skip).limit(limit).exec((err, docs) => {
       if (err) { reject(err) }
-      else { console.log('count: ', timeForCount);console.log('total DB time: ', Date.now()-time1);resolve(docs) }
+      else { resolve(docs) }
     })
   })
 

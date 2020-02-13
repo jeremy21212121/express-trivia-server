@@ -4,7 +4,7 @@ const categoriesArray = require('../db/categoriesArray.js')
 const getRandomInt = require('./getRandomInt.js')
 
 const db = new Datastore({
-  filename: __dirname +"/../db/questions.db",
+  filename: __dirname.replace('utils', '') +"db/questions.db",
   autoload: true,
   corruptAlertThreshold: 0 // don't tolerate any data corruption
 });

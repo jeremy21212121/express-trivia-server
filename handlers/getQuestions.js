@@ -49,6 +49,7 @@ const getQuestions = async (req, res) => {
           quantity += remainder;
         }
         // request an appropriate quantity of questions for this category
+        // console.log('getQuestions category, quantity passed to getAnswers', category, quantity)
         const categoryAnswerArray = await getAnswers(category, quantity);
         const decodedCategoryAnswerArray = decodeCategoryAnswerArray(
           categoryAnswerArray
@@ -60,17 +61,19 @@ const getQuestions = async (req, res) => {
       throw new Error("invalid-categories"); // will be caught in catch block and result in a 500 respone + error message
     }
 
+    /**  We don't need this anymore, we have cached all the questions for now */
     // try to wait while inserting all our questions into the db.
     // It will not store duplicates, so we don't need to check.
-    try {
-      await Promise.all(answersArray.map(qaObj =>
-        db.insertQuestion(qaObj)
-      ));
-      // ensure data is persisted to disk
-      db.persistence.compactDatafile();
-    } catch (error) {
-      console.log(error)
-    }
+    // try {
+    //   await Promise.all(answersArray.map(qaObj =>
+    //     db.insertQuestion(qaObj)
+    //   ));
+    //   // ensure data is persisted to disk
+    //   // db.persistence.compactDatafile();
+    //   db.numberOfRecords().then(n => console.log(`DB contains ${n} questions`))
+    // } catch (error) {
+    //   console.log(error)
+    // }
 
     // randomly shuffle answersArray because they are currently grouped by category
     // I feel like it is more fun when the questions are shuffled.

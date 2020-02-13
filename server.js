@@ -21,7 +21,7 @@ if (app.get('env') === 'production') {
 
 app.use(session(sessionOptions))
 app.use(express.json())
-app.use(cors({ credentials: true, origin: 'https://justtrivia.fun',  }))
+app.use(cors({ credentials: true, origin: 'http://192.168.0.10:3000',  }))
 
 // routes
 app.post('/start', getQuestions)

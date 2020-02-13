@@ -14,8 +14,6 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "he": "^1.2.0",
-    "nedb": "^1.8.0",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.5"
+    "nedb": "^1.8.0"
   }
 }

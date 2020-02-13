@@ -16,11 +16,12 @@ const sessionOptions = require('./config/sessionOptions')
 
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1) // for proxying behind nginx in prod
+  app.disable('x-powered-by') // disable express header, its an info leak
 }
 
 app.use(session(sessionOptions))
 app.use(express.json())
-app.use(cors({ credentials: true, origin: 'http://192.168.0.10:3000',  }))
+app.use(cors({ credentials: true, origin: 'https://justtrivia.fun',  }))
 
 // routes
 app.post('/start', getQuestions)

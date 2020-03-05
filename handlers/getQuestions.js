@@ -20,7 +20,8 @@ const getAnswers = require("../utils/getAnswers");
 // decodes html entities in questions and answers to save the client having to decode them
 const decodeCategoryAnswerArray = require("../utils/decodeCategoryAnswerArray");
 
-const { db } = require("../utils/db.js");
+// why is this here? we arent using it
+// const { db } = require("../utils/db.js");
 
 // route handler
 const getQuestions = async (req, res) => {
@@ -36,7 +37,16 @@ const getQuestions = async (req, res) => {
 
   try {
     if (validateCategories(categories)) {
-      // these help us determine the quantity of Q/As we need from each category
+
+      if (categories.length > 10) {
+        // more categories than questions
+        // shuffle the categories and pop until length === 10
+        categories.sort(() => getRandInt(2) - 1);
+        while (categories.length > 10) {
+          categories.pop()
+        }
+      }
+      // The following helps us determine the quantity of Q/As we need from each category
       // TODO: remove magic number 10
       const questionsPerCategory = Math.floor(10 / categories.length);
       const remainder = 10 % categories.length;

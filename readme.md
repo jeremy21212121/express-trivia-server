@@ -6,6 +6,8 @@ See the [repo for the front-end progressive web app](https://github.com/jeremy21
 
 Play the game at [JustTrivia.fun](https://justtrivia.fun)
 
+Just Trivia is a simple open-source trivia game with no ads or tracking. This is the repo for the back-end.
+
 ## Status
 
 This server previously made requests to the [Open Trivia DB](https://opentdb.com/) at the beginning of each session, caching each unique questions. All questions are now cached, so performance is much better.

@@ -2,9 +2,19 @@
 
 Powered by Express and the [Open Trivia DB](https://opentdb.com/)
 
+See the [repo for the front-end progressive web app](https://github.com/jeremy21212121/trivia-frontend)
+
+Play the game at [JustTrivia.fun](https://justtrivia.fun)
+
 ## Status
 
-This project is currently MVP. It works and it doesn't crash during normal operation. Hasn't been load tested yet. Now supporting multiple-category games!
+This server previously made requests to the [Open Trivia DB](https://opentdb.com/) at the beginning of each session, caching each unique questions. All questions are now cached, so performance is much better.
+
+The code needs a refactor and can probably be simplfied. I wrote a thin wrapper that simulates a response from the OTDB but actually queries the local DB. This allowed me to improve performance without significant changes to the code. Now that we don't depend on an external API anymore, the code needs to be refactored.
+
+We handled a surge of about 500 concurrent real users without breaking a sweat, but I still need to do some load testing. I want to be able to support at least 10000 concurrent users, and I'd be really happy if I could handle 100k with 1 vCore/1 GB RAM.
+
+If scaling is required, we can spin up a larger VM and point it at this servers' `memcached` to share a session store. We could use the exisiting server exclusively as a `memcached` server, and spin up a couple application servers, all without losing the current sessions. I don't see significant scaling being required, but it doesn't hurt to have a plan.
 
 ## Why
 
@@ -39,7 +49,13 @@ Upon receiving a valid POST to `/verify`, we verify the client's guess. The resp
 
 Intended to run on linux distros with `systemd`, like Debian or Ubuntu. See `systemd` folder for the service file. This allows systemd to handle starting, stopping, restarting and logging for our server process.
 
-It also expects `memcached` to be running locally on the default port. HTTPS termination and proxying is handled by nginx, which will also serve the web app front-end, when it is completed.
+It also expects `memcached` to be running locally on the default port. HTTPS termination and proxying is handled by nginx, which also serves the [web app front-end](https://justtrivia.fun).
+
+## Security
+
+I have covered all the security best practices from [the official docs](https://expressjs.com/en/advanced/best-practice-security.html). Some security headers are added in prod by NGINX, so we don't need to use [helmet](https://www.npmjs.com/package/helmet).
 
 ## todo
-- cache responses from [OpenTDB](https://opentdb.com/) to improve `/start` endpoint performance on multi-category games
+- ~~~cache responses from [OpenTDB](https://opentdb.com/) to improve `/start` endpoint performance on multi-category games~~~
+
+- Refactor now that we don't depend on an external API

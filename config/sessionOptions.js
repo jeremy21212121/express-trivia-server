@@ -3,6 +3,7 @@
  */
 const session = require('express-session')
 const MemcachedStore = require('connect-memcached')(session)
+const isProd = require('./isProd')
 
 const sessionOptions = {
   key: 'tsid',
@@ -11,12 +12,13 @@ const sessionOptions = {
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    maxAge: 24*60*60*1000,
+    maxAge: 14*24*60*60*1000,
     credentials: true,
     sameSite: 'strict',
-    // secure: true
+    secure: isProd
   },
   store: new MemcachedStore({
+    // default port for memcached. it is the same in prod and dev.
     hosts: ['127.0.0.1:11211'],
     secret: require('../secrets/storeSecret'),
   })

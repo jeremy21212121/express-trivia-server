@@ -2,26 +2,25 @@ const express = require('express')
 const session = require('express-session')
 const cors = require('cors')
 
-const { db } = require('./utils/db.js')
-db.numberOfRecords().then(n => console.log(`DB contains ${n} questions`))
-
 /** route handlers */
 const verifyThenNextQuestion = require('./handlers/verifyThenNextQuestion')
 const getQuestions = require('./handlers/getQuestions')
 /*****************/
 
 const app = express()
-const port = 8765
+const port = require('./config/port')
 const sessionOptions = require('./config/sessionOptions')
+const corsOptions = require('./config/corsOptions')
+const isProd = require('./config/isProd')
 
-if (app.get('env') === 'production') {
+if (isProd) {
   app.set('trust proxy', 1) // for proxying behind nginx in prod
   app.disable('x-powered-by') // disable express header, its an info leak
 }
 
-app.use(session(sessionOptions))
-app.use(express.json())
-app.use(cors({ credentials: true, origin: 'http://192.168.0.10:3000',  }))
+app.use( session( sessionOptions) )
+app.use( express.json() )
+app.use( cors(corsOptions) )
 
 // routes
 app.post('/start', getQuestions)
@@ -29,7 +28,7 @@ app.post('/verify', verifyThenNextQuestion)
 
 // 404 handler
 app.use((req, res, next) => {
-  res.status(404).json({error: true, msg: 'notfound'})
+  res.status(404).json({error: true, msg: 'not-found'})
 })
 
 app.listen(port, () => console.log(`listening on ${port}!...`))

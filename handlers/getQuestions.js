@@ -17,11 +17,8 @@ const answerToQuestion = require("../utils/answerObjectToQuestionObject");
 // gets Q/A's from openTriviaDB
 const getAnswers = require("../utils/getAnswers");
 
-// decodes html entities in questions and answers to save the client having to decode them
+// decodes html entities in questions and answers to save the client having to decode them. Eg. "&gt;" becomes ">"
 const decodeCategoryAnswerArray = require("../utils/decodeCategoryAnswerArray");
-
-// why is this here? we arent using it
-// const { db } = require("../utils/db.js");
 
 // route handler
 const getQuestions = async (req, res) => {
@@ -71,20 +68,6 @@ const getQuestions = async (req, res) => {
       throw new Error("invalid-categories"); // will be caught in catch block and result in a 500 respone + error message
     }
 
-    /**  We don't need this anymore, we have cached all the questions for now */
-    // try to wait while inserting all our questions into the db.
-    // It will not store duplicates, so we don't need to check.
-    // try {
-    //   await Promise.all(answersArray.map(qaObj =>
-    //     db.insertQuestion(qaObj)
-    //   ));
-    //   // ensure data is persisted to disk
-    //   // db.persistence.compactDatafile();
-    //   db.numberOfRecords().then(n => console.log(`DB contains ${n} questions`))
-    // } catch (error) {
-    //   console.log(error)
-    // }
-
     // randomly shuffle answersArray because they are currently grouped by category
     // I feel like it is more fun when the questions are shuffled.
     // If only a single category or "any" was selected this isn't needed, but it wont hurt.
@@ -109,6 +92,7 @@ const getQuestions = async (req, res) => {
       number: 0,
       question: questionsArray[0]
     };
+
   } catch (error) {
     // ensure response values are properly set for error
     pendingResponse.payload.success = false;

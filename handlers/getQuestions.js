@@ -1,9 +1,7 @@
 /*
   Gets the right quantity of question/answers from each category, adds questions/answers to the session and responds with the first question.
 
-  Now featuring persistent caching of questions to a DB. Eventually we will be able to avoid calling the OTDB and improve performance significantly.
-
-  The open trivia DB only supports single category requests, so multi-category is achieved with multiple http requests
+  This used to call the OTDB API directly, but now we have cached them locally
 */
 
 const validateCategories = require("../utils/categoryValidation");
@@ -19,6 +17,10 @@ const getAnswers = require("../utils/getAnswers");
 
 // decodes html entities in questions and answers to save the client having to decode them. Eg. "&gt;" becomes ">"
 const decodeCategoryAnswerArray = require("../utils/decodeCategoryAnswerArray");
+
+// for logging times for performance purposes
+//perf const start = (name = "") => ({ time: Date.now(), name });
+//perf const stop = (start) => console.log(`${start.name} ${Date.now() - start.time}ms`);
 
 // route handler
 const getQuestions = async (req, res) => {
@@ -56,8 +58,9 @@ const getQuestions = async (req, res) => {
           quantity += remainder;
         }
         // request an appropriate quantity of questions for this category
-        // console.log('getQuestions category, quantity passed to getAnswers', category, quantity)
+        //perf const t = start('gQ getAnswers x1')
         const categoryAnswerArray = await getAnswers(category, quantity);
+        //perf stop(t)
         const decodedCategoryAnswerArray = decodeCategoryAnswerArray(
           categoryAnswerArray
         );

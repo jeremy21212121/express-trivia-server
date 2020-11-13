@@ -42,14 +42,27 @@ db.findAnswers = (query = { category: 'any' }, limit = 10) =>
       if (!dbCategoryDict) { reject(new Error('invalid-category')) }
       query.category = dbCategoryDict.apiName
     }
+    // instrumentation for timing db.numberOfRecords
+    // const time1 = Date.now()
 
-    const time1 = Date.now()
-    const count = await db.numberOfRecords(query).catch(e => reject(e))
-    const timeForCount = Date.now() - time1
+    // performance optimization
+    // avoids counting all questions when no particular category is specified
+    // hardcode the count to save ~100ms
+    let count = 3558;
+    if (query.category) {
+      count = await db.numberOfRecords(query).catch(e => reject(e))
+    }
+    // instrumentation for timing db.numberOfRecords
+    // const timeForCount = Date.now() - time1
+    // log time
+    // console.log(timeForCount)
+
+    // the difference between number of relevant records available and the quantity requested
     const diff = count - limit
     let skip = 0
     if (diff > 0) {
       // we have enough questions in the db to skip a random number between 0 and diff
+      // this is the mechanism we use to make sure we don't return the same questions on consecutive games
       skip = getRandomInt(diff)
     }
     db.find(query).skip(skip).limit(limit).exec((err, docs) => {

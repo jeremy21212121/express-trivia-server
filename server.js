@@ -26,8 +26,8 @@ app.use( express.json() )
 app.use( cors(corsOptions) )
 
 // routes
-app.post('/start', validateRequest.getQuestions, getQuestions)
-app.post('/verify', verifyThenNextQuestion)
+app.post('/start', validateRequest.categories, getQuestions)
+app.post('/verify',validateRequest.guess, validateRequest.session, verifyThenNextQuestion)
 
 // 404 handler
 app.use((req, res, next) => {
@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 // error handler
 app.use((err, req, res, _next) => {
   console.log(
-    `Error: ${err.message}
+    `Error: ${err.message || err}
 Request body:`)
   console.log(req.body)
   res.status(500).json({ error: true, msg: err.message})

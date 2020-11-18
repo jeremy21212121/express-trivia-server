@@ -7,9 +7,9 @@ const validateIndex = (indexStr) => {
   if (indexStr === null || indexStr === '') {
     return false
   }
-  // returns true if index is a number string between 0 and 3
+  // returns true if indexStr is a number or number string between 0 and 3
   const index = Number(indexStr)
-  return index > -1 && index < 4
+  return !Number.isNaN(index) && (index > -1 && index < 4)
 }
 
 // checks if session is in a valid state.
@@ -17,7 +17,7 @@ const validateIndex = (indexStr) => {
 const validateSession = (sesh) => sesh.questions && sesh.answers && typeof sesh.currentQuestion === 'number' && sesh.currentQuestion >= 0 && !sesh.gameOver
 
 // returns true if guess is correct
-const evaluateGuess = (guess, sesh) => parseInt(guess) === sesh.answers[sesh.currentQuestion].correctIndex
+const evaluateGuess = (guess, sesh) => Number(guess) === sesh.answers[sesh.currentQuestion].correctIndex
 
 // will result in a gameOver or provide the next question
 const _advanceGame = (sesh, json, gameOver) => {

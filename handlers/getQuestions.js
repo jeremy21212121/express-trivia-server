@@ -35,40 +35,34 @@ const getQuestions = async (req, res) => {
   const pendingResponse = { payload: { success: false }, status: 500 };
 
   try {
-    if (validateCategories(categories)) {
 
-      if (categories.length > 10) {
-        // more categories than questions
-        // shuffle the categories and pop until length === 10
-        categories.sort(() => getRandInt(2) - 1);
-        while (categories.length > 10) {
-          categories.pop()
-        }
-      }
-      // The following helps us determine the quantity of Q/As we need from each category
-      // TODO: remove magic number 10
-      const questionsPerCategory = Math.floor(10 / categories.length);
-      const remainder = 10 % categories.length;
+    if (categories.length > 10) {
+      // more categories than questions
+      // shuffle the categories and make length === 10
+      categories.sort(() => getRandInt(2) - 1);
+      categories.length = 10;
+    }
+    // The following helps us determine the quantity of Q/As we need from each category
+    // TODO: remove magic number 10
+    const questionsPerCategory = Math.floor(10 / categories.length);
+    const remainder = 10 % categories.length;
 
-      // iterate over each category and get relevant question/answers from open trivia DB
-      for (const [index, category] of categories.entries()) {
-        // if last category in array and there is a remainder, add the remainder for the quantity
-        let quantity = questionsPerCategory;
-        if (remainder && index === categories.length - 1) {
-          quantity += remainder;
-        }
-        // request an appropriate quantity of questions for this category
-        //perf const t = start('gQ getAnswers x1')
-        const categoryAnswerArray = await getAnswers(category, quantity);
-        //perf stop(t)
-        const decodedCategoryAnswerArray = decodeCategoryAnswerArray(
-          categoryAnswerArray
-        );
-        // add this categories answers to the answersArray
-        answersArray.push(...decodedCategoryAnswerArray);
+    // iterate over each category and get relevant question/answers from open trivia DB
+    for (const [index, category] of categories.entries()) {
+      // if last category in array and there is a remainder, add the remainder for the quantity
+      let quantity = questionsPerCategory;
+      if (remainder && index === categories.length - 1) {
+        quantity += remainder;
       }
-    } else {
-      throw new Error("invalid-categories"); // will be caught in catch block and result in a 500 respone + error message
+      // request an appropriate quantity of questions for this category
+      //perf const t = start('gQ getAnswers x1')
+      const categoryAnswerArray = await getAnswers(category, quantity);
+      //perf stop(t)
+      const decodedCategoryAnswerArray = decodeCategoryAnswerArray(
+        categoryAnswerArray
+      );
+      // add this categories answers to the answersArray
+      answersArray.push(...decodedCategoryAnswerArray);
     }
 
     // randomly shuffle answersArray because they are currently grouped by category

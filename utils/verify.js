@@ -4,8 +4,11 @@
 
  // checks that guess index is sane
 const validateIndex = (indexStr) => {
+  if (indexStr === null || indexStr === '') {
+    return false
+  }
   // returns true if index is a number string between 0 and 3
-  const index = parseInt(indexStr)
+  const index = Number(indexStr)
   return index > -1 && index < 4
 }
 

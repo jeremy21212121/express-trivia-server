@@ -17,6 +17,7 @@
     "nedb": "^1.8.0"
   },
   "devDependencies": {
+    "chalk": "^4.1.0",
     "mocha": "^8.2.0"
   }
 }

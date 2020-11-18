@@ -5,6 +5,7 @@
  * getAnswers is used by the getQuestions route handler
  */
 const assert = require("assert").strict;
+const colorize = require("../helpers/colorize.js");
 const getAnswers = require("../../utils/getAnswers.js");
 
 const categoriesArray = require("../../db/categoriesArray.js");
@@ -63,7 +64,7 @@ const uniqueAnswerIds = (catArray) => {
 //perf const stop = (start) => console.log(`${start.name} ${Date.now() - start.time}ms`);
 
 module.exports = () => {
-  describe("function getAnswers", () => {
+  describe(colorize.describeString('Function', {name: 'getAnswers', type: 'function'}), () => {
     describe("single category", () => {
       let answers = [];
 

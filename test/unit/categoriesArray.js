@@ -1,19 +1,19 @@
 /**
  * Ensures every valid category key is represented.
  * (categoriesArray allows mapping between a category key and name)
- * 
+ *
  * This test ensures that categoriesArray.find will not return undefined
  * when a valid category key is specified. It also ensures the integrity of the data.
  */
 
 const assert = require("assert").strict;
+const colorize = require("../helpers/colorize.js");
 const categoriesArray = require("../../db/categoriesArray.js");
 const validCategories = require("../helpers/validCategories.js");
 const categoryProperties = ["componentName", "displayName", "key", "apiName"];
-
+// `array ${colorize(typeof categoriesArray, 'categoriesArray')}`
 module.exports = () => {
-  describe("array categoriesArray", () => {
-
+  describe(colorize.describeString('Array', { name: 'categoriesArray', type: 'object' }), () => {
     describe("find each valid category object by key", () => {
       const categories = validCategories.map((key) =>
         categoriesArray.find((catObj) => catObj.key === key)
@@ -38,7 +38,7 @@ module.exports = () => {
               (prop) => !categoryProperties.includes(prop)
             )} prop`
           );
-          return valid
+          return valid;
         });
         assert.ok(
           allProperties,

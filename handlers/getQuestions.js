@@ -4,7 +4,11 @@
   This used to call the OTDB API directly, but now we have cached them locally
 */
 
-const validateCategories = require("../utils/categoryValidation");
+// turns console.log/console.error into a noop during tests to avoid polluting stdout/stderr
+const logger =
+  process.env.NODE_ENV === "test"
+    ? { error: () => {}, log: () => {} }
+    : console;
 
 // returns a random int between 0 and arg
 const getRandInt = require("../utils/getRandomInt");
@@ -35,7 +39,6 @@ const getQuestions = async (req, res) => {
   const pendingResponse = { payload: { success: false }, status: 500 };
 
   try {
-
     if (categories.length > 10) {
       // more categories than questions
       // shuffle the categories and make length === 10
@@ -72,7 +75,7 @@ const getQuestions = async (req, res) => {
 
     // map answers to questions that can be sent to client
     questionsArray.push(
-      ...answersArray.map(answer => answerToQuestion(answer))
+      ...answersArray.map((answer) => answerToQuestion(answer))
     );
 
     // initialize session
@@ -87,15 +90,14 @@ const getQuestions = async (req, res) => {
     pendingResponse.status = 200;
     pendingResponse.payload.questionData = {
       number: 0,
-      question: questionsArray[0]
+      question: questionsArray[0],
     };
-
   } catch (error) {
     // ensure response values are properly set for error
     pendingResponse.payload.success = false;
     pendingResponse.status = 500;
     pendingResponse.error = error.message;
-    console.error(error);
+    logger.error(error);
   }
   res.status(pendingResponse.status).json(pendingResponse.payload);
 };

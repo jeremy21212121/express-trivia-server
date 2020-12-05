@@ -1,10 +1,12 @@
 /**
  *  For testing route handlers. I wrote my own for fun and education.
  */
-
+// string[] of valid category IDs
+const validCategories = require("../helpers/validCategories.js");
 // string[][] of valid category IDs. Non-deterministic, will be different each run.
 const sampleOfValidMultiCategoryArrays = require("../helpers/sampleValidMultiCatArrays.js");
-
+// used for generating request objects for testing /verify route handler
+const getQuestions = require("../../handlers/getQuestions.js");
 /**
  * Creates a mock request object for testing route handlers
  * @param {object} body - Array of category ID strings
@@ -24,6 +26,7 @@ const mockRequest = (body) => ({
  */
 const mockHandlerRunner = (handler, mockReq) =>
   new Promise(async (resolve, reject) => {
+    // console.log(mockReq)
     const mockResponse = {
       status: (status) => ({
         json: (obj) => resolve({ status, payload: obj }),

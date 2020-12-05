@@ -17,7 +17,7 @@ const validateIndex = (indexStr) => {
 const validateSession = (sesh) => sesh.questions && sesh.answers && typeof sesh.currentQuestion === 'number' && sesh.currentQuestion >= 0 && !sesh.gameOver
 
 // returns true if guess is correct
-const evaluateGuess = (guess, sesh) => Number(guess) === sesh.answers[sesh.currentQuestion].correctIndex
+const evaluateGuess = (guess, sesh) => sesh && Number(guess) === sesh.answers[sesh.currentQuestion].correctIndex
 
 // will result in a gameOver or provide the next question
 const _advanceGame = (sesh, json, gameOver) => {

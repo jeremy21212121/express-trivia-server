@@ -21,6 +21,7 @@ const {
 const sampleOfValidMultiCategoryArrays = require("../helpers/sampleValidMultiCatArrays.js");
 const validateQuestionObject = require("../helpers/validateQuestionObject.js");
 const validators = require("../helpers/validators.js");
+// const verifyThenNextQuestion = require("../../handlers/verifyThenNextQuestion.js");
 // colorize('handler', 'route handler') + '' + colorize('function', 'getQuestions') + '' + colorize('detail', '(/start')
 
 module.exports = () => {
@@ -160,6 +161,42 @@ module.exports = () => {
           });
         });
       });
+      describe("More than the maximum number of categories (10)", () => {
+        // use all valid categories. The route handler should shorten the array to length === 10.
+        const cats = [...validCategories];
+        const mockReq = mockRequest({ categories: cats });
+        let response;
+
+        it("doesn't reject", async () => {
+          await assert.doesNotReject(async () => {
+            response = await mockHandlerRunner(getQuestions, mockReq);
+          });
+        });
+
+        it("categories array has been shortened to length of 10", () => {
+          const isArray = Array.isArray(mockReq.body.categories);
+          const length = isArray && mockReq.body.categories.length;
+          assert.ok(
+            length === 10,
+            `isArray: ${isArray}; length: ${length}; Expected: true, 10`
+          );
+        });
+      });
+    describe("Invalid category", () => {
+      const mockReq = mockRequest({ categories: undefined })
+      let response;
+      it("doesn't reject", async () => {
+        await assert.doesNotReject(async () => {
+          response = await mockHandlerRunner(getQuestions, mockReq);
+        });
+      });
+      it("returns a 500 error response", () => {
+        assert.strictEqual(response.status, 500)
+      })
+      it("response payload indicates lack of success", () => {
+        assert.strictEqual(response.payload.success, false)
+      })
+    })
     }
   );
 };

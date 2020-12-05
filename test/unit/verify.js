@@ -4,7 +4,7 @@ const {
   validateIndex,
   validateSession,
   // evaluateGuess,
-  // buildResponseAndAdvance,
+  buildResponseAndAdvance,
 } = require("../../utils/verify");
 
 const validateIndexTest = () => {
@@ -96,9 +96,31 @@ const validateSessionTest = () => {
         it("returns false if gameOver is true", () => {
           const mockSesh = new MockSession();
           mockSesh.gameOver = true;
+          // mockSesh.currentQuestion = 9;
           const isValid = validateSession(mockSesh);
           assert.ok(!isValid, "Incorrectly returned true");
         });
+      });
+    }
+  );
+};
+
+const braa = () => {
+  describe(
+    colorize.describeString("Function", {
+      name: "buildResponseAndAdvance",
+      type: "function",
+    }),
+    () => {
+      it("returns gameOver if currentQuestion === 9", () => {
+        const mockSesh = new MockSession();
+        // mockSesh.gameOver = true;
+        mockSesh.currentQuestion = 9;
+        const returnValue = buildResponseAndAdvance(mockSesh, true);
+        assert.ok(
+          returnValue.results.gameOver,
+          "Incorrectly returned gameOver:false"
+        );
       });
     }
   );
@@ -108,5 +130,6 @@ module.exports = () => {
   describe("file /utils/verify.js", () => {
     validateIndexTest();
     validateSessionTest();
+    braa();
   });
 };

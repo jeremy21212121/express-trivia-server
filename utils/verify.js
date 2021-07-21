@@ -19,6 +19,8 @@ const validateSession = (sesh) => sesh.questions && sesh.answers && typeof sesh.
 // returns true if guess is correct
 const evaluateGuess = (guess, sesh) => sesh && Number(guess) === sesh.answers[sesh.currentQuestion].correctIndex
 
+const getCorrectIndex = (sesh) => sesh.answers[sesh.currentQuestion].correctIndex
+
 // will result in a gameOver or provide the next question
 const _advanceGame = (sesh, json, gameOver) => {
   if (gameOver) {
@@ -41,6 +43,8 @@ const buildResponseAndAdvance = (sesh, isCorrectGuess) => {
     results: {
       score: sesh.score,
       isCorrectGuess,
+      // currentQuestion has already been incremented so we need to use currentQuestion - 1
+      correctAnswer: sesh.answers[sesh.currentQuestion - 1].correct_answer
     }
   }
   _advanceGame(sesh, json, gameOver) // NB: this function call mutates sesh and/or json
@@ -49,6 +53,7 @@ const buildResponseAndAdvance = (sesh, isCorrectGuess) => {
 }
 
 module.exports = {
+  getCorrectIndex,
   validateIndex,
   validateSession,
   evaluateGuess,

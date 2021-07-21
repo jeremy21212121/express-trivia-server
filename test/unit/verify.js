@@ -57,8 +57,12 @@ const validSessionValues = {
   score: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   gameOver: [false],
 };
+
+// returns an array of integers from 0 to $limit-1
+const range = (limit) => Array.from(Array(limit), (_n,i) => i)
+
 const MockSession = function () {
-  this.answers = [];
+  this.answers = range(10).map((n) => ({ correctAnswer: `test ${n}` }));
   this.questions = [];
   this.currentQuestion = 0;
   this.score = 0;

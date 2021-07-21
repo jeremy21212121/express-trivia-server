@@ -3,7 +3,7 @@
 */
 
 const {
-  evaluateGuess,
+  getCorrectIndex,
   buildResponseAndAdvance,
 } = require("../utils/verify");
 
@@ -11,7 +11,9 @@ module.exports = (req, res) => {
   // verifies the current question's answer and returns the next question or gameOver: true
   const guess = req.body.guess;
   const sesh = req.session;
-  const isCorrectAnswer = evaluateGuess(guess, sesh);
+  const correctIndex = getCorrectIndex(sesh);
+  const isCorrectAnswer = correctIndex === Number(guess);
+  
   if (isCorrectAnswer) {
     sesh.score++;
   }

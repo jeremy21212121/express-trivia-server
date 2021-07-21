@@ -14,12 +14,9 @@ const app = express()
 const port = require('./config/port')
 const sessionOptions = require('./config/sessionOptions')
 const corsOptions = require('./config/corsOptions')
-const isProd = require('./config/isProd')
 
-if (isProd) {
-  app.set('trust proxy', 1) // for proxying behind nginx in prod
-  app.disable('x-powered-by') // disable express header, its an info leak
-}
+app.set('trust proxy', 1) // for proxying behind nginx in prod
+app.disable('x-powered-by') // disable express header, its an info leak
 
 app.use( session( sessionOptions) )
 app.use( express.json() )
